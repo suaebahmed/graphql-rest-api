@@ -10,6 +10,6 @@ Choose the right branch in this repository to get the code for the different par
 
 npm install
 
-Run the server
+run the server
 
 npm start
