@@ -39,9 +39,13 @@ type RootMutation{
     createEvent( a:EventInput): Event
     createUser(email: String! password: String!): User
     bookEvent(eventId: ID!): Event
+    cancelBooking(bookingId: ID!): Event
 }
 schema {
     query: RootQuery
     mutation: RootMutation
 }
 `)
+
+//  in rootQuery --
+// there are 3 endpoint

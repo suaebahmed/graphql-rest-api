@@ -1,8 +1,9 @@
 const Event = require('../../models/event')
 const User = require('../../models/user')
 const Bookings = require('../../models/booking')
+// const { dateToString } = require('../../helpers/date');
 const bcrypt = require('bcryptjs')
-
+const jwt = require('jsonwebtoken')
 
 const events = eventIds =>{
     // console.log(eventIds)  --- for relational object chain 
@@ -36,6 +37,19 @@ const user = userId =>{
                 throw err;
              })
 }
+const singleEvent = async (eventId) =>{
+    try{
+        let event = await Event.findById(eventId);
+        return {
+            ...event._doc,
+            _id: event.id,
+            creator: user.bind(this,event.creator)
+        }
+
+    }catch(err){
+        throw err;
+    }
+}
 
 module.exports = {
     events: ()=>{
@@ -55,17 +69,17 @@ module.exports = {
                 throw err;
              })
     },
-    user: (args)=>{
-        let id = args._id;
-        return User.findById(id)
-        .then(result=>{
+    // user: (args)=>{
+    //     let id = args._id;
+    //     return User.findById(id)
+    //     .then(result=>{
 
-            return result;
-        })
-        .catch(function(err){
-            throw err;
-        })
-    },
+    //         return result;
+    //     })
+    //     .catch(function(err){
+    //         throw err;
+    //     })
+    // },
     bookEvent: async ()=>{
         try{
             const bookings = await Bookings.find();
@@ -81,6 +95,7 @@ module.exports = {
             throw err
         }
     },
+//-----------------------  mutation  ---------------------------
     createEvent: (args)=>{
         let newEvent = new Event({
             title: args.a.title,
@@ -128,7 +143,6 @@ module.exports = {
                                         }) 
                                         return newUser.save()
                                         .then(result=>{
-                                            console.log(result)
                                             return result
                                         })
                                         .catch(err=>{
@@ -143,5 +157,43 @@ module.exports = {
                    .catch(err=>{
                     throw err
                 })
+    },
+    login: (args)=>{
+    },
+    bookEvent: async (args)=>{
+
+        try{
+            let newBooking = new Bookings({
+                event: args.eventId,
+                user: '5e842a7816ad0e21e47239a0'
+            });
+            let result = await newBooking.save()
+            // console.log(result);
+            // console.log(result._doc);
+            // console.log(result._id)
+            console.log(result.id)
+            return {
+                ...result._doc,
+                _id: result.id,
+                createdAt: new Date(booking._doc.createdAt).toISOString(),
+                updatedAt: new Date(booking._doc.updatedAt).toISOString()
+            }
+        }catch(err){
+            throw err;
+        }
+    },
+    cancelBooking: async (args)=>{
+        try{
+            const booking = await Bookings.findById(args.bookingId).populate('event');
+            const event = {
+                ...booking.event,
+                _id: booking.event.id,
+                creator: user.bind(this,event.creator)
+            }
+            let ss = await Bookings.deleteOne(eventId);
+            return event;
+        }catch(err){
+            throw err;
+        }
     }
 }
